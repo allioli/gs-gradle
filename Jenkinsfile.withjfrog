@@ -1,17 +1,17 @@
 node {
-  def server = Artifactory.server 'newtechacademy.jfrog.io'
-  def myGradleContainer = docker.image('gradle:jdk8-alpine')
+  def server = Artifactory.server 'artifactory'
+  def myGradleContainer = docker.image('gradle:jdk8')
   myGradleContainer.pull()
   stage('prep') {
     checkout scm
   }
   stage('build') {
-     myGradleContainer.inside("-v ${env.HOME}/.gradle:/home/gradle/.gradle") {
+     myGradleContainer.inside() {
        sh 'cd complete && ./gradlew build'
      }
   }
   stage('test') {
-     myGradleContainer.inside("-v ${env.HOME}/.gradle:/home/gradle/.gradle") {
+     myGradleContainer.inside() {
        sh 'cd complete && ./gradlew test'
      }
   }
@@ -20,7 +20,7 @@ node {
       "files": [
         {
           "pattern": "complete/build/libs/gs-gradle-*.jar",
-          "target": "gradle-dev-local/academy/newtech/gs-gradle/1.0/gs-gradle-1.0-docker.jar"
+          "target": "libs-release-local/academy/newtech/gs-gradle/1.0/gs-gradle-1.0-docker.jar"
         }
      ]
     }"""
